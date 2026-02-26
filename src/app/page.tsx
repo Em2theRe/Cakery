@@ -14,7 +14,7 @@ export default function Home() {
         <div className="grid gap-6 p-8 md:grid-cols-2 md:items-center">
           <div className="space-y-3">
             <h1 className="text-4xl font-semibold tracking-tight">
-              Cakery — dein Wunschkuchen, einfach gestaltet.
+              Cakery - dein Wunschkuchen, einfach gestaltet.
             </h1>
             <p className="cakery-muted max-w-lg">
               Wähle eine Schablone, passe Geschmack & Design an und sende deine Bestellung
@@ -34,9 +34,8 @@ export default function Home() {
           {/* Placeholder für spätere Illustration/Preview */}
           <div className="cakery-card p-6">
             <p className="text-sm font-medium">Preview</p>
-            <p className="cakery-muted text-sm">
-              Als nächstes bauen wir hier eine echte Mini-Vorschau vom Builder rein.
-            </p>
+        
+          
             <div
               className="mt-4 h-40 w-full rounded-2xl"
               style={{ background: "rgba(255,255,255,0.65)" }}
