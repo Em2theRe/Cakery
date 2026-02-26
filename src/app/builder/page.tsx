@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cakeTemplates, CakeTemplate, CakeShape } from "@/lib/cakeTemplates";
 import Link from "next/link";
 import { Chip } from "@/components/ui";
@@ -57,6 +57,16 @@ export default function BuilderPage() {
   );
 
   const totalPrice = useMemo(() => priceFor(template, state), [template, state]);
+
+    useEffect(() => {
+    const payload = {
+      state,
+      totalPrice,
+      templateName: template.name,
+      updatedAt: new Date().toISOString(),
+    };
+    localStorage.setItem("cakery_builder", JSON.stringify(payload));
+  }, [state, totalPrice, template.name]);
 
   // Wenn Template wechselt, setzen wir Defaults passend zum Template
   function setTemplate(nextTemplateId: string) {
