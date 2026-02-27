@@ -15,7 +15,7 @@ export default function Home() {
         <div className="grid gap-6 p-8 md:grid-cols-2 md:items-center">
           <div className="space-y-3">
             <h1 className="text-4xl font-semibold tracking-tight">
-              Cakery — dein Wunschkuchen, einfach gestaltet.
+              Cakery - dein Wunschkuchen, einfach gestaltet.
             </h1>
             <p className="cakery-muted max-w-lg">
               Wähle eine Schablone, passe Geschmack & Design an und sende deine Bestellung
@@ -32,9 +32,13 @@ export default function Home() {
             </div>
           </div>
 
-          <CakeCarouselPreview />
+        
+                  <CakeCarouselPreview />
         </div>
       </div>
+
+      {/* Features */}
+      <div className="grid gap-4 sm:grid-cols-3"></div>
 
       {/* Features */}
       <div className="grid gap-4 sm:grid-cols-3">
