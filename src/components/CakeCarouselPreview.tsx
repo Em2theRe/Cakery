@@ -9,14 +9,14 @@ type CakeSlide = {
 };
 
 const CAKE_SLIDES: CakeSlide[] = [
-  { image: "/cakes/cake-1.svg", alt: "Beispieltorte 1" },
-  { image: "/cakes/cake-2.svg", alt: "Beispieltorte 2" },
-  { image: "/cakes/cake-3.svg", alt: "Beispieltorte 3" },
-  { image: "/cakes/cake-4.svg", alt: "Beispieltorte 4" },
-  { image: "/cakes/cake-5.svg", alt: "Beispieltorte 5" },
+  { image: "/cakes/Cake1e.png", alt: "Beispieltorte 1" },
+  { image: "/cakes/Cake2.png", alt: "Beispieltorte 2" },
+  { image: "/cakes/Cake3e.png", alt: "Beispieltorte 3" },
+  { image: "/cakes/Cake4a.png", alt: "Beispieltorte 4" },
+  { image: "/cakes/Cake5y.png", alt: "Beispieltorte 5" },
 ];
 
-const AUTO_SLIDE_MS = 3000;
+const AUTO_SLIDE_MS = 4000;
 
 export default function CakeCarouselPreview() {
   const [index, setIndex] = useState(0);
