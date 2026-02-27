@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CakeCarouselPreview from "@/components/CakeCarouselPreview";
 
 export default function Home() {
   return (
@@ -31,17 +32,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Placeholder für spätere Illustration/Preview */}
-          <div className="cakery-card p-6">
-            <p className="text-sm font-medium">Preview</p>
-            <p className="cakery-muted text-sm">
-              Als nächstes bauen wir hier eine echte Mini-Vorschau vom Builder rein.
-            </p>
-            <div
-              className="mt-4 h-40 w-full rounded-2xl"
-              style={{ background: "rgba(255,255,255,0.65)" }}
-            />
-          </div>
+          <CakeCarouselPreview />
         </div>
       </div>
 

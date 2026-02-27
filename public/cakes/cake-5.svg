@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Cakery Beispielbild">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe9df"/>
+      <stop offset="100%" stop-color="#ffd3c6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <circle cx="600" cy="390" r="180" fill="#fff6f1" stroke="#f29a8d" stroke-width="10"/>
+  <rect x="440" y="430" width="320" height="44" rx="12" fill="#f29a8d" opacity="0.8"/>
+  <text x="600" y="220" font-size="58" text-anchor="middle" fill="#7b4a40" font-family="Arial, sans-serif">Cakery</text>
+  <text x="600" y="292" font-size="30" text-anchor="middle" fill="#7b4a40" font-family="Arial, sans-serif">Ersetze dieses Bild mit deiner Torte</text>
+</svg>
