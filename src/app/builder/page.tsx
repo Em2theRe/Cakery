@@ -13,7 +13,7 @@ type BuilderState = {
   flavorId: string;
   fillingId: string;
   colorId: string;
-  decorationId: string;
+  decorationIds: string[];
   message: string;
 };
 
@@ -22,7 +22,9 @@ function priceFor(template: CakeTemplate, s: BuilderState) {
   const flavor = template.flavors.find((x) => x.id === s.flavorId)!;
   const filling = template.fillings.find((x) => x.id === s.fillingId)!;
   const color = template.colors.find((x) => x.id === s.colorId)!;
-  const deco = template.decorations.find((x) => x.id === s.decorationId)!;
+  const decoSum = (s.decorationIds ?? [])
+  .map((id) => template.decorations.find((x) => x.id === id)?.priceAdd ?? 0)
+  .reduce((a, b) => a + b, 0);
 
   return (
     template.basePrice +
@@ -30,7 +32,7 @@ function priceFor(template: CakeTemplate, s: BuilderState) {
     flavor.priceAdd +
     filling.priceAdd +
     color.priceAdd +
-    deco.priceAdd
+    decoSum
   );
 }
 
@@ -46,7 +48,7 @@ export default function BuilderPage() {
       flavorId: t.flavors[0].id,
       fillingId: t.fillings[0].id,
       colorId: t.colors[0].id,
-      decorationId: t.decorations[0].id,
+      decorationIds: [t.decorations[0].id],
       message: "",
     };
   });
@@ -79,7 +81,7 @@ export default function BuilderPage() {
       flavorId: t.flavors[0].id,
       fillingId: t.fillings[0].id,
       colorId: t.colors[0].id,
-      decorationId: t.decorations[0].id,
+      decorationId: [t.decorations[0].id],
     }));
   }
 
@@ -236,81 +238,125 @@ export default function BuilderPage() {
         )}
 
         {step === 3 && (
-        <section className="space-y-4">
-            <h2 className="text-lg font-medium">Design</h2>
+  <section className="space-y-4">
+    <h2 className="text-lg font-medium">Design</h2>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-            <CakerySelect
-                label="Farbe"
-                value={state.colorId}
-                onChange={(v) => setState((p) => ({ ...p, colorId: v }))}
-                options={template.colors.map((x) => ({
-                value: x.id,
-                label: `${x.label}${x.priceAdd ? ` (+${x.priceAdd}€)` : ""}`,
-                }))}
-            />
+    <div className="grid gap-4 sm:grid-cols-2">
+      {/* Farbe */}
+      <CakerySelect
+        label="Farbe"
+        value={state.colorId}
+        onChange={(v) => setState((p) => ({ ...p, colorId: v }))}
+        options={template.colors.map((x) => ({
+          value: x.id,
+          label: `${x.label}${x.priceAdd ? ` (+${x.priceAdd}€)` : ""}`,
+        }))}
+      />
 
-            <CakerySelect
-                label="Deko"
-                value={state.decorationId}
-                onChange={(v) => setState((p) => ({ ...p, decorationId: v }))}
-                options={template.decorations.map((x) => {
-                  const price = x.priceAdd ? ` (+${x.priceAdd}€)` : "";
-                
-                  const icon =
-                    x.id === "sprinkles" ? "✨" :
-                    x.id === "berries" ? "🍓" :
-                    x.id === "drip" ? "🍫" :
-                    x.id === "flowers" ? "🌸" :
-                    x.id === "gold" ? "⭐" :
-                    x.id === "topper" ? "🎉" :
-                    x.id === "naked" ? "◻️" :
-                    x.id === "ombre" ? "🌈" :
-                    x.id === "marble" ? "🌀" :
-                    x.id === "ganache" ? "💧" :
-                    "";
-                
-                  return {
-                    value: x.id,
-                    label: `${x.label}${price}`,
-                    icon: icon ? <span className="text-base leading-none">{icon}</span> : undefined,
-                  };
-                })}
-            />
+      {/* Platzhalter rechts damit Grid sauber bleibt */}
+      <div className="hidden sm:block" />
 
-            <label className="space-y-1 sm:col-span-2">
-                <span className="cakery-label">Text auf dem Kuchen</span>
-                <input
-                className="cakery-input"
-                placeholder="z.B. Alles Gute Sandro!"
-                value={state.message}
-                onChange={(e) => setState((p) => ({ ...p, message: e.target.value }))}
-                maxLength={30}
-                />
-                <p className="text-xs text-black/50">
-                max. 30 Zeichen
-                </p>
-            </label>
-            </div>
+      {/* Deko mehrfach */}
+      <div className="space-y-2 sm:col-span-2">
+        <span className="cakery-label">Deko (mehrfach)</span>
 
-            <div className="flex gap-2">
-            <button
-                onClick={() => setStep(2)}
-                className="rounded-md border px-4 py-2 hover:bg-black/5"
-                style={{ borderColor: "var(--border)" }}
-            >
-                Zurück
-            </button>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {template.decorations.map((x) => {
+            const active = (state.decorationIds ?? []).includes(x.id);
 
-            <Link
-                href="/checkout"
-                className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:opacity-90"
-            >
-                Zur Bestellung
-            </Link>
-            </div>
-        </section>
-        )}
+            const icon =
+              x.id === "sprinkles" ? "✨" :
+              x.id === "berries" ? "🍓" :
+              x.id === "drip" ? "🍫" :
+              x.id === "flowers" ? "🌸" :
+              x.id === "gold" ? "⭐" :
+              x.id === "topper" ? "🎉" :
+              x.id === "naked" ? "◻️" :
+              x.id === "ombre" ? "🌈" :
+              x.id === "marble" ? "🌀" :
+              x.id === "ganache" ? "💧" :
+              "";
+
+            return (
+              <button
+                key={x.id}
+                type="button"
+                onClick={() =>
+                  setState((p) => ({
+                    ...p,
+                    decorationIds: active
+                      ? (p.decorationIds ?? []).filter((id) => id !== x.id)
+                      : [...(p.decorationIds ?? []), x.id],
+                  }))
+                }
+                className={[
+                  "flex items-center justify-between rounded-xl border px-4 py-3 text-left transition",
+                  active ? "bg-black/5" : "hover:bg-black/5",
+                ].join(" ")}
+                style={{
+                  borderColor: active ? "rgba(242,154,141,0.65)" : "var(--border)",
+                  boxShadow: active ? "0 0 0 3px var(--ring)" : "none",
+                }}
+              >
+                <span className="flex items-center gap-2 text-sm">
+                  {icon ? <span className="text-base leading-none">{icon}</span> : null}
+                  <span>
+                    {x.label} {x.priceAdd ? `(+${x.priceAdd}€)` : ""}
+                  </span>
+                </span>
+                <span className="text-lg">{active ? "✓" : ""}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Chips */}
+        {(state.decorationIds ?? []).length ? (
+          <div className="flex flex-wrap gap-2">
+  {(state.decorationIds ?? []).map((id) => (
+    <span
+      key={id}
+      className="rounded-full border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700"
+    >
+      {id}
+    </span>
+  ))}
+</div>
+        ) : null}
+      </div>
+
+      {/* Text */}
+      <label className="space-y-1 sm:col-span-2">
+        <span className="cakery-label">Text auf dem Kuchen</span>
+        <input
+          className="cakery-input"
+          placeholder="z.B. Alles Gute, Sandro!"
+          value={state.message}
+          onChange={(e) => setState((p) => ({ ...p, message: e.target.value }))}
+          maxLength={30}
+        />
+        <p className="text-xs text-black/50">max. 30 Zeichen</p>
+      </label>
+    </div>
+
+    <div className="flex gap-2">
+      <button
+        onClick={() => setStep(2)}
+        className="rounded-md border px-4 py-2 hover:bg-black/5"
+        style={{ borderColor: "var(--border)" }}
+      >
+        Zurück
+      </button>
+
+      <Link
+        href="/checkout"
+        className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:opacity-90"
+      >
+        Zur Bestellung
+      </Link>
+    </div>
+  </section>
+)}
 
       </div>
 
@@ -345,9 +391,14 @@ export default function BuilderPage() {
               Farbe: {template.colors.find((x) => x.id === state.colorId)?.label}
             </li>
             <li>
-              Deko:{" "}
-              {template.decorations.find((x) => x.id === state.decorationId)?.label}
-            </li>
+            Deko:{" "}
+            {(state.decorationIds ?? []).length
+              ? (state.decorationIds ?? [])
+                  .map((id) => template.decorations.find((d) => d.id === id)?.label)
+                  .filter(Boolean)
+                  .join(", ")
+              : "Keine"}
+          </li>
             {state.message.trim() ? <li>Text: “{state.message.trim()}”</li> : null}
           </ul>
         </div>
@@ -463,13 +514,168 @@ function CakePreview({
     state: {
       shape: CakeShape;
       colorId: string;
-      decorationId: string;
+      decorationIds: string[];
       message: string;
     };
   }) {
     const color = template.colors.find((x) => x.id === state.colorId)?.hex ?? "#F7F7F7";
-    const deco = template.decorations.find((x) => x.id === state.decorationId)?.id;
-  
+    const decos = state.decorationIds ?? [];
+    const deco = decos[0] ?? "none";
+
+    const shapeMaskStyle = (() => {
+      switch (state.shape) {
+        case "round":
+          return { borderRadius: "9999px" };
+        case "square":
+          return { borderRadius: "18px" };
+        case "heart":
+          return {
+            clipPath:
+              "path('M50 84 C20 66 10 52 10 36 C10 22 20 14 32 14 C41 14 47 19 50 24 C53 19 59 14 68 14 C80 14 90 22 90 36 C90 52 80 66 50 84 Z')",
+          };
+        case "star":
+          return {
+            clipPath:
+              "polygon(50% 12%, 61% 38%, 89% 40%, 67% 58%, 74% 86%, 50% 71%, 26% 86%, 33% 58%, 11% 40%, 39% 38%)",
+          };
+        case "oval":
+          return { borderRadius: "40%" };
+        default:
+          return {
+            clipPath: "polygon(50% 10%, 82% 28%, 82% 72%, 50% 90%, 18% 72%, 18% 28%)",
+          };
+      }
+    })();
+
+    const renderScatteredDecoration = ({
+      icon,
+      count,
+      itemSize,
+      seed,
+      opacity = 1,
+    }: {
+      icon: string;
+      count: number;
+      itemSize: number;
+      seed: number;
+      opacity?: number;
+    }) => {
+      const goldenAngle = 137.508;
+      const spread = 0.9;
+
+      return (
+        <div className="pointer-events-none absolute inset-[4%] overflow-hidden" style={shapeMaskStyle}>
+          {Array.from({ length: count }).map((_, i) => {
+            const normalized = (i + 0.5) / count;
+            const radius = Math.sqrt(normalized) * spread;
+            const angleDeg = i * goldenAngle + seed * 19;
+            const angle = (angleDeg * Math.PI) / 180;
+            const x = 50 + Math.cos(angle) * radius * 50;
+            const y = 50 + Math.sin(angle) * radius * 50;
+            const size = itemSize + (((i + seed) % 2) - 0.5);
+            const rotate = (i * 17 + seed * 5) % 360;
+
+            return (
+              <span
+                key={`${icon}-${seed}-${i}`}
+                className="absolute select-none"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  transform: `translate(-50%, -50%) rotate(${rotate}deg)`,
+                  fontSize: `${size}px`,
+                  opacity,
+                  filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.18))",
+                }}
+              >
+                {icon}
+              </span>
+            );
+          })}
+        </div>
+      );
+    };
+
+    const renderTierDecoration = (isTopTier: boolean) => {
+      if (!deco || deco === "none" || deco === "topper") return null;
+
+      const sparkleCount = isTopTier ? 13 : 24;
+      const fruitCount = isTopTier ? 8 : 14;
+      const seed = isTopTier ? 8 : 3;
+
+      switch (deco) {
+        case "sprinkles":
+          return renderScatteredDecoration({
+            icon: "✨",
+            count: sparkleCount,
+            itemSize: isTopTier ? 11 : 12,
+            seed,
+            opacity: 0.9,
+          });
+        case "berries":
+          return renderScatteredDecoration({
+            icon: "🍓",
+            count: fruitCount,
+            itemSize: isTopTier ? 14 : 15,
+            seed,
+          });
+        case "drip":
+          return (
+            <div className="pointer-events-none absolute left-[14%] right-[14%] top-[14%] h-[18%] rounded-b-2xl bg-[rgba(80,36,20,0.72)]" style={shapeMaskStyle} />
+          );
+        case "flowers":
+          return renderScatteredDecoration({
+            icon: "🌸",
+            count: fruitCount,
+            itemSize: isTopTier ? 14 : 15,
+            seed,
+          });
+        case "gold":
+          return renderScatteredDecoration({
+            icon: "⭐",
+            count: sparkleCount,
+            itemSize: isTopTier ? 11 : 12,
+            seed,
+            opacity: 0.95,
+          });
+        case "naked":
+          return (
+            <div className="pointer-events-none absolute inset-[17%] border border-[rgba(139,94,60,0.45)] bg-[rgba(255,255,255,0.22)]" style={shapeMaskStyle} />
+          );
+        case "ombre":
+          return (
+            <div
+              className="pointer-events-none absolute inset-[8%] bg-gradient-to-b from-[rgba(255,255,255,0.72)] via-transparent to-[rgba(131,79,132,0.32)]"
+              style={shapeMaskStyle}
+            />
+          );
+        case "marble":
+          return (
+            <div
+              className="pointer-events-none absolute inset-[10%] opacity-45"
+              style={{
+                ...shapeMaskStyle,
+                background:
+                  "repeating-linear-gradient(35deg, rgba(255,255,255,0.8), rgba(255,255,255,0.8) 6px, rgba(130,130,130,0.55) 7px, rgba(130,130,130,0.55) 9px)",
+              }}
+            />
+          );
+        case "ganache":
+          return (
+            <div
+              className="pointer-events-none absolute inset-[10%] opacity-75"
+              style={{
+                ...shapeMaskStyle,
+                background:
+                  "radial-gradient(circle at 30% 20%, rgba(255,255,255,0.75), rgba(255,255,255,0.12) 45%, transparent 65%)",
+              }}
+            />
+          );
+        default:
+          return null;
+      }
+    };
+
     return (
       <div className="mt-3 flex items-center justify-center">
         <div
@@ -502,6 +708,7 @@ function CakePreview({
                 }}
             >
                 <ShapeSvg shape={state.shape} size={190} fill={color} stroke="rgba(0,0,0,0.12)" />
+                {renderTierDecoration(false)}
 
                 {/* "inner rim" to make it look like the top tier sits inside */}
                 <div
@@ -529,20 +736,17 @@ function CakePreview({
                 }}
                 >
                 <ShapeSvg shape={state.shape} size={118} fill={color} stroke="rgba(0,0,0,0.14)" />
+                {renderTierDecoration(true)}
 
               
                 </div>
             ) : null}
             </div>
 
-
-  
-          {/* Decoration overlay (simple label for now) */}
-          {deco && deco !== "none" ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full bg-black/5 px-3 py-1 text-xs text-black/70">
-                {deco}
-              </div>
+          {/* Decoration overlay */}
+          {deco === "topper" ? (
+            <div className="pointer-events-none absolute left-1/2 top-8 -translate-x-1/2 text-3xl drop-shadow-sm">
+              🎉
             </div>
           ) : null}
   
@@ -560,4 +764,3 @@ function CakePreview({
       </div>
     );
   }
-  

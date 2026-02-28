@@ -1,6 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
+import { getCommunityCakePaths } from "@/lib/communityCakes";
+import CakeCarouselPreview from "@/components/CakeCarouselPreview";
 
-export default function Home() {
+
+export default async function Home() {
+  const communityCakes = getCommunityCakePaths();
+
   return (
     <div className="space-y-8">
       {/* Hero */}
@@ -31,18 +37,14 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Placeholder für spätere Illustration/Preview */}
-          <div className="cakery-card p-6">
-            <p className="text-sm font-medium">Preview</p>
-        
           
-            <div
-              className="mt-4 h-40 w-full rounded-2xl"
-              style={{ background: "rgba(255,255,255,0.65)" }}
-            />
-          </div>
+        
+                  <CakeCarouselPreview />
         </div>
       </div>
+
+      {/* Features */}
+      <div className="grid gap-4 sm:grid-cols-3"></div>
 
       {/* Features */}
       <div className="grid gap-4 sm:grid-cols-3">
