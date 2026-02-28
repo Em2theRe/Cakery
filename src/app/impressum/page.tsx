@@ -18,7 +18,7 @@ export default function ImpressumPage() {
         <div>
           <p className="font-semibold">Vertreten durch</p>
           <ul className="cakery-muted text-sm list-disc pl-5 mt-1 space-y-1">
-            <li>Emre Yagiz</li>
+            <li>Emre Yagiz (Baker)</li>
             <li>Ahmad Ahmad Ali</li>
             <li>Hamzah Madiesh</li>
           </ul>
