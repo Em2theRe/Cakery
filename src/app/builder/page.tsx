@@ -13,7 +13,7 @@ type BuilderState = {
   flavorId: string;
   fillingId: string;
   colorId: string;
-  decorationId: string;
+  decorationIds: string[];
   message: string;
 };
 
@@ -22,7 +22,9 @@ function priceFor(template: CakeTemplate, s: BuilderState) {
   const flavor = template.flavors.find((x) => x.id === s.flavorId)!;
   const filling = template.fillings.find((x) => x.id === s.fillingId)!;
   const color = template.colors.find((x) => x.id === s.colorId)!;
-  const deco = template.decorations.find((x) => x.id === s.decorationId)!;
+  const decoSum = (s.decorationIds ?? [])
+  .map((id) => template.decorations.find((x) => x.id === id)?.priceAdd ?? 0)
+  .reduce((a, b) => a + b, 0);
 
   return (
     template.basePrice +
@@ -30,7 +32,7 @@ function priceFor(template: CakeTemplate, s: BuilderState) {
     flavor.priceAdd +
     filling.priceAdd +
     color.priceAdd +
-    deco.priceAdd
+    decoSum
   );
 }
 
@@ -46,7 +48,7 @@ export default function BuilderPage() {
       flavorId: t.flavors[0].id,
       fillingId: t.fillings[0].id,
       colorId: t.colors[0].id,
-      decorationId: t.decorations[0].id,
+      decorationIds: [t.decorations[0].id],
       message: "",
     };
   });
@@ -79,7 +81,7 @@ export default function BuilderPage() {
       flavorId: t.flavors[0].id,
       fillingId: t.fillings[0].id,
       colorId: t.colors[0].id,
-      decorationId: t.decorations[0].id,
+      decorationId: [t.decorations[0].id],
     }));
   }
 
@@ -236,81 +238,130 @@ export default function BuilderPage() {
         )}
 
         {step === 3 && (
-        <section className="space-y-4">
-            <h2 className="text-lg font-medium">Design</h2>
+  <section className="space-y-4">
+    <h2 className="text-lg font-medium">Design</h2>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-            <CakerySelect
-                label="Farbe"
-                value={state.colorId}
-                onChange={(v) => setState((p) => ({ ...p, colorId: v }))}
-                options={template.colors.map((x) => ({
-                value: x.id,
-                label: `${x.label}${x.priceAdd ? ` (+${x.priceAdd}€)` : ""}`,
-                }))}
-            />
+    <div className="grid gap-4 sm:grid-cols-2">
+      {/* Farbe */}
+      <CakerySelect
+        label="Farbe"
+        value={state.colorId}
+        onChange={(v) => setState((p) => ({ ...p, colorId: v }))}
+        options={template.colors.map((x) => ({
+          value: x.id,
+          label: `${x.label}${x.priceAdd ? ` (+${x.priceAdd}€)` : ""}`,
+        }))}
+      />
 
-            <CakerySelect
-                label="Deko"
-                value={state.decorationId}
-                onChange={(v) => setState((p) => ({ ...p, decorationId: v }))}
-                options={template.decorations.map((x) => {
-                  const price = x.priceAdd ? ` (+${x.priceAdd}€)` : "";
-                
-                  const icon =
-                    x.id === "sprinkles" ? "✨" :
-                    x.id === "berries" ? "🍓" :
-                    x.id === "drip" ? "🍫" :
-                    x.id === "flowers" ? "🌸" :
-                    x.id === "gold" ? "⭐" :
-                    x.id === "topper" ? "🎉" :
-                    x.id === "naked" ? "◻️" :
-                    x.id === "ombre" ? "🌈" :
-                    x.id === "marble" ? "🌀" :
-                    x.id === "ganache" ? "💧" :
-                    "";
-                
-                  return {
-                    value: x.id,
-                    label: `${x.label}${price}`,
-                    icon: icon ? <span className="text-base leading-none">{icon}</span> : undefined,
-                  };
-                })}
-            />
+      {/* Platzhalter rechts damit Grid sauber bleibt */}
+      <div className="hidden sm:block" />
 
-            <label className="space-y-1 sm:col-span-2">
-                <span className="cakery-label">Text auf dem Kuchen</span>
-                <input
-                className="cakery-input"
-                placeholder="z.B. Alles Gute Sandro!"
-                value={state.message}
-                onChange={(e) => setState((p) => ({ ...p, message: e.target.value }))}
-                maxLength={30}
-                />
-                <p className="text-xs text-black/50">
-                max. 30 Zeichen
-                </p>
-            </label>
-            </div>
+      {/* Deko mehrfach */}
+      <div className="space-y-2 sm:col-span-2">
+        <span className="cakery-label">Deko (mehrfach)</span>
 
-            <div className="flex gap-2">
-            <button
-                onClick={() => setStep(2)}
-                className="rounded-md border px-4 py-2 hover:bg-black/5"
-                style={{ borderColor: "var(--border)" }}
-            >
-                Zurück
-            </button>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {template.decorations.map((x) => {
+            const active = (state.decorationIds ?? []).includes(x.id);
 
-            <Link
-                href="/checkout"
-                className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:opacity-90"
-            >
-                Zur Bestellung
-            </Link>
-            </div>
-        </section>
-        )}
+            const icon =
+              x.id === "sprinkles" ? "✨" :
+              x.id === "berries" ? "🍓" :
+              x.id === "drip" ? "🍫" :
+              x.id === "flowers" ? "🌸" :
+              x.id === "gold" ? "⭐" :
+              x.id === "topper" ? "🎉" :
+              x.id === "naked" ? "◻️" :
+              x.id === "ombre" ? "🌈" :
+              x.id === "marble" ? "🌀" :
+              x.id === "ganache" ? "💧" :
+              "";
+
+            return (
+              <button
+                key={x.id}
+                type="button"
+                onClick={() =>
+                  setState((p) => ({
+                    ...p,
+                    decorationIds: active
+                      ? (p.decorationIds ?? []).filter((id) => id !== x.id)
+                      : [...(p.decorationIds ?? []), x.id],
+                  }))
+                }
+                className={[
+                  "flex items-center justify-between rounded-xl border px-4 py-3 text-left transition",
+                  active ? "bg-black/5" : "hover:bg-black/5",
+                ].join(" ")}
+                style={{
+                  borderColor: active ? "rgba(242,154,141,0.65)" : "var(--border)",
+                  boxShadow: active ? "0 0 0 3px var(--ring)" : "none",
+                }}
+              >
+                <span className="flex items-center gap-2 text-sm">
+                  {icon ? <span className="text-base leading-none">{icon}</span> : null}
+                  <span>
+                    {x.label} {x.priceAdd ? `(+${x.priceAdd}€)` : ""}
+                  </span>
+                </span>
+                <span className="text-lg">{active ? "✓" : ""}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Chips */}
+        {(state.decorationIds ?? []).length ? (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {(state.decorationIds ?? []).map((id) => {
+              const d = template.decorations.find((x) => x.id === id);
+              if (!d) return null;
+              return (
+                <span
+                  key={id}
+                  className="rounded-full border px-3 py-1 text-sm"
+                  style={{ borderColor: "var(--border)" }}
+                >
+                  {d.label}
+                </span>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+
+      {/* Text */}
+      <label className="space-y-1 sm:col-span-2">
+        <span className="cakery-label">Text auf dem Kuchen</span>
+        <input
+          className="cakery-input"
+          placeholder="z.B. Alles Gute, Sara!"
+          value={state.message}
+          onChange={(e) => setState((p) => ({ ...p, message: e.target.value }))}
+          maxLength={30}
+        />
+        <p className="text-xs text-black/50">max. 30 Zeichen</p>
+      </label>
+    </div>
+
+    <div className="flex gap-2">
+      <button
+        onClick={() => setStep(2)}
+        className="rounded-md border px-4 py-2 hover:bg-black/5"
+        style={{ borderColor: "var(--border)" }}
+      >
+        Zurück
+      </button>
+
+      <Link
+        href="/checkout"
+        className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:opacity-90"
+      >
+        Zur Bestellung
+      </Link>
+    </div>
+  </section>
+)}
 
       </div>
 
@@ -345,9 +396,14 @@ export default function BuilderPage() {
               Farbe: {template.colors.find((x) => x.id === state.colorId)?.label}
             </li>
             <li>
-              Deko:{" "}
-              {template.decorations.find((x) => x.id === state.decorationId)?.label}
-            </li>
+            Deko:{" "}
+            {(state.decorationIds ?? []).length
+              ? (state.decorationIds ?? [])
+                  .map((id) => template.decorations.find((d) => d.id === id)?.label)
+                  .filter(Boolean)
+                  .join(", ")
+              : "Keine"}
+          </li>
             {state.message.trim() ? <li>Text: “{state.message.trim()}”</li> : null}
           </ul>
         </div>
@@ -463,12 +519,13 @@ function CakePreview({
     state: {
       shape: CakeShape;
       colorId: string;
-      decorationId: string;
+      decorationIds: string[];
       message: string;
     };
   }) {
     const color = template.colors.find((x) => x.id === state.colorId)?.hex ?? "#F7F7F7";
-    const deco = template.decorations.find((x) => x.id === state.decorationId)?.id;
+    const decos = state.decorationIds ?? [];
+    const deco = decos[0] ?? "none";
 
     const shapeMaskStyle = (() => {
       switch (state.shape) {
