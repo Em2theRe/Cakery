@@ -1,7 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
+import { getCommunityCakePaths } from "@/lib/communityCakes";
 import CakeCarouselPreview from "@/components/CakeCarouselPreview";
 
-export default function Home() {
+
+export default async function Home() {
+  const communityCakes = getCommunityCakePaths();
+
   return (
     <div className="space-y-8">
       {/* Hero */}
@@ -32,6 +37,7 @@ export default function Home() {
             </div>
           </div>
 
+          
         
                   <CakeCarouselPreview />
         </div>
