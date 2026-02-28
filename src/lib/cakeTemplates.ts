@@ -34,7 +34,6 @@ export const cakeTemplates: CakeTemplate[] = [
       { id: "s", label: "S (8-10 Stück)", portions: 10, priceAdd: 0 },
       { id: "m", label: "M (12-16 Stück)", portions: 16, priceAdd: 10 },
       { id: "l", label: "L (20-24 Stück)", portions: 24, priceAdd: 20 },
-      { id: "Hamzah", label: "XL/Hamzah (80-90 Stück)", portions: 90, priceAdd: 385},
     ],
 
     flavors: [
@@ -48,7 +47,6 @@ export const cakeTemplates: CakeTemplate[] = [
         { id: "mocha", label: "Kaffee / Mokka", priceAdd: 3 },
         { id: "coconut", label: "Kokos", priceAdd: 3 },
         { id: "pistachio", label: "Pistazie", priceAdd: 5 },
-        { id: "Ahmad", label: "Tripple A (Ahmad)", priceAdd: 199 },
       ],
       
 
@@ -63,7 +61,6 @@ export const cakeTemplates: CakeTemplate[] = [
         { id: "salted-caramel", label: "Salted Caramel", priceAdd: 8 },
         { id: "cookies-cream", label: "Cookies & Cream (Oreo)", priceAdd: 8 },
         { id: "mocha", label: "Kaffee / Mokka", priceAdd: 8 },
-        { id: "spezial", label: "Emre's Geheimfüllung (Proteinreich)", priceAdd: 25 },
     ],
 
     colors: [
