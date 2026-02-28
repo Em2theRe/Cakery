@@ -48,7 +48,7 @@ export default function BuilderPage() {
       flavorId: t.flavors[0].id,
       fillingId: t.fillings[0].id,
       colorId: t.colors[0].id,
-      decorationIds: [t.decorations[0].id],
+      decorationIds: [],
       message: "",
     };
   });
@@ -81,7 +81,7 @@ export default function BuilderPage() {
       flavorId: t.flavors[0].id,
       fillingId: t.fillings[0].id,
       colorId: t.colors[0].id,
-      decorationId: [t.decorations[0].id],
+      decorationIds: [],
     }));
   }
 
