@@ -9,7 +9,7 @@ type OrderPayload = {
     flavorId: string;
     fillingId: string;
     colorId: string;
-    decorationId: string;
+    decorationIds: string[];
     message: string;
     totalPrice: number;
   };
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       flavor_id: body.items.flavorId,
       filling_id: body.items.fillingId,
       color_id: body.items.colorId,
-      decoration_id: body.items.decorationId,
+      decoration_id: (body.items.decorationIds?.length ? body.items.decorationIds.join(",") : "none"),
       message: body.items.message ?? null,
       total_price: Math.round(body.items.totalPrice),
 

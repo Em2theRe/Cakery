@@ -11,7 +11,7 @@ type StoredBuilder = {
     flavorId: string;
     fillingId: string;
     colorId: string;
-    decorationId: string;
+    decorationIds: string[];
     message: string;
   };
   totalPrice: number;
@@ -103,7 +103,7 @@ export default function CheckoutPage() {
                       flavorId: builder.state.flavorId,
                       fillingId: builder.state.fillingId,
                       colorId: builder.state.colorId,
-                      decorationId: builder.state.decorationId,
+                      decorationIds: builder.state.decorationIds ?? [],
                       message: builder.state.message,
                       totalPrice: builder.totalPrice,
                     },
