@@ -312,21 +312,16 @@ export default function BuilderPage() {
 
         {/* Chips */}
         {(state.decorationIds ?? []).length ? (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {(state.decorationIds ?? []).map((id) => {
-              const d = template.decorations.find((x) => x.id === id);
-              if (!d) return null;
-              return (
-                <span
-                  key={id}
-                  className="rounded-full border px-3 py-1 text-sm"
-                  style={{ borderColor: "var(--border)" }}
-                >
-                  {d.label}
-                </span>
-              );
-            })}
-          </div>
+          <div className="flex flex-wrap gap-2">
+  {(state.decorationIds ?? []).map((id) => (
+    <span
+      key={id}
+      className="rounded-full border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700"
+    >
+      {id}
+    </span>
+  ))}
+</div>
         ) : null}
       </div>
 
@@ -335,7 +330,7 @@ export default function BuilderPage() {
         <span className="cakery-label">Text auf dem Kuchen</span>
         <input
           className="cakery-input"
-          placeholder="z.B. Alles Gute, Sara!"
+          placeholder="z.B. Alles Gute, Sandro!"
           value={state.message}
           onChange={(e) => setState((p) => ({ ...p, message: e.target.value }))}
           maxLength={30}
