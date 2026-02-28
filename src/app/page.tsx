@@ -1,6 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
+import { getCommunityCakePaths } from "@/lib/communityCakes";
 
-export default function Home() {
+export default async function Home() {
+  const communityCakes = getCommunityCakePaths();
+
   return (
     <div className="space-y-8">
       {/* Hero */}
@@ -31,15 +35,28 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Placeholder für spätere Illustration/Preview */}
           <div className="cakery-card p-6">
-            <p className="text-sm font-medium">Preview</p>
-        
-          
-            <div
-              className="mt-4 h-40 w-full rounded-2xl"
-              style={{ background: "rgba(255,255,255,0.65)" }}
-            />
+            <p className="text-sm font-medium">Carousel Preview</p>
+
+            {communityCakes.length === 0 ? (
+              <p className="mt-4 text-sm text-black/70">
+                Keine Bilder gefunden. Erwartet in <code>public/cakes</code>.
+              </p>
+            ) : (
+              <div className="mt-4 flex snap-x gap-3 overflow-x-auto pb-2">
+                {communityCakes.map((cakePath, index) => (
+                  <Image
+                    key={cakePath}
+                    src={cakePath}
+                    alt={`Preview Kuchen ${index + 1}`}
+                    width={320}
+                    height={240}
+                    className="h-40 w-52 shrink-0 snap-start rounded-2xl object-cover"
+                  />
+                ))}
+              </div>
+            )}
+
           </div>
         </div>
       </div>
